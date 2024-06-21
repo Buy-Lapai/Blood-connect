@@ -1,0 +1,14 @@
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Visit, VisitSchema } from './visit.schema';
+import { VisitsService } from './visits.service';
+import { VisitsController } from './visits.controller';
+
+@Module({
+    imports: [
+        MongooseModule.forFeature([{ name: Visit.name, schema: VisitSchema }]),
+    ],
+    providers: [VisitsService],
+    controllers: [VisitsController],
+})
+export class VisitsModule {}
