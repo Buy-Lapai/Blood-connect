@@ -3,27 +3,25 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class User extends Document {
-    @Prop()
-    first_name: string;
+  @Prop()
+  firstName: string;
 
-    @Prop()
-    middle_name?: string;
+  @Prop()
+  middleName?: string;
 
-    @Prop()
-    last_name: string;
+  @Prop()
+  lastName: string;
 
-    @Prop()
-    username?: string;
+  @Prop()
+  email: string;
 
-    @Prop()
-    email: string;
+  @Prop()
+  password: string;
 
-    @Prop()
-    password: string;
-
-
-    @Prop({ default: false })
-    isDonor: boolean;
+  @Prop({
+    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+  })
+  bloodType: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
