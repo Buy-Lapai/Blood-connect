@@ -6,6 +6,7 @@ import { DonorsModule } from './modules/donors/donors.module';
 import { BloodBanksModule } from './modules/blood-banks/blood-banks.module';
 import { VisitsModule } from './modules/visits/visits.module';
 import { JwtModule } from '@nestjs/jwt';
+import { HospitalModule } from './modules/hospitals/hospitals.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JwtModule } from '@nestjs/jwt';
     DonorsModule,
     BloodBanksModule,
     VisitsModule,
+    HospitalModule
   ],
 })
 export class AppModule {}
