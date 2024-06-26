@@ -23,6 +23,12 @@ export class Hospital extends Document {
 
   @Prop()
   address: string;
+
+  @Prop({ default: 0 })
+  totalNumberOfPints: number;
+
+  @Prop({ default: 0 })
+  numberOfPintsAvailable: number;
 }
 
 export const HospitalSchema = SchemaFactory.createForClass(Hospital);

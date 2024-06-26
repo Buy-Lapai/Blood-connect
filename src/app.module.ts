@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { DonorsModule } from './modules/donors/donors.module';
-import { BloodBanksModule } from './modules/blood-banks/blood-banks.module';
 import { VisitsModule } from './modules/visits/visits.module';
 import { JwtModule } from '@nestjs/jwt';
 import { HospitalModule } from './modules/hospitals/hospitals.module';
@@ -18,7 +17,6 @@ import { HospitalModule } from './modules/hospitals/hospitals.module';
     AuthModule,
     UsersModule,
     DonorsModule,
-    BloodBanksModule,
     VisitsModule,
     HospitalModule
   ],

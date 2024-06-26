@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcryptjs';
+import { HospitalsService } from '../hospitals/hospitals.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private hospitalService: HospitalsService,
   ) {}
 
   async login(loginUserDto: LoginUserDto) {
@@ -57,6 +59,32 @@ export class AuthService {
     });
 
     const payload = { email: newUser.email, sub: newUser._id };
+    return {
+      accessToken: this.jwtService.sign(payload, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      }),
+    };
+  }
+
+  async hospitalLogin(loginUserDto: LoginUserDto) {
+    const hospital = await this.hospitalService.findOne({
+      email: loginUserDto.email.toLocaleLowerCase(),
+    });
+    if (!hospital) {
+      throw new NotFoundException(
+        'This email is not registered to any hospital on this platform',
+      );
+    }
+    const isPasswordCorrect = bcrypt.compareSync(
+      loginUserDto.password,
+      hospital.password,
+    );
+    if (!isPasswordCorrect) {
+      throw new UnauthorizedException(
+        'Incorrect password. Please confirm your password and try again.',
+      );
+    }
+    const payload = { email: hospital.email, sub: hospital._id };
     return {
       accessToken: this.jwtService.sign(payload, {
         secret: this.configService.get<string>('JWT_SECRET'),

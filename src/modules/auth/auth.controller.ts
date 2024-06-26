@@ -27,4 +27,10 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('login/hospital')
+  async hospitalLogin(@Body() signInDto: LoginUserDto) {
+    return this.authService.hospitalLogin(signInDto);
+  }
 }
