@@ -8,9 +8,7 @@ import {
   SortOrder,
 } from 'mongoose';
 import { Donation, DonationDocument } from './donation.schema';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import { User } from '../users/user.schema';
 import { Hospital } from '../hospitals/hospitals.schema';
 import { CreateDonationDto } from './dto/create-donation.dto';
 import { FindDonationsDto } from './dto/find-donation.dto';
@@ -99,5 +97,50 @@ export class DonationsService {
     await hospital.save();
 
     return { message: 'Successful' };
+  }
+
+  async aggregateDonations(payload: FindDonationsDto, hospital?: Hospital) {
+    const query: FilterQuery<Donation> = {};
+    if (hospital) query.hospital = hospital.id;
+    if (payload.search) {
+      const users = await this.userService.find(
+        {
+          $or: [
+            { firstName: new RegExp(`^${payload.search}`, 'i') },
+            { lastName: new RegExp(`^${payload.search}`, 'i') },
+          ],
+        },
+        0,
+        50,
+        'id',
+      );
+      query.user = { $in: users.map((data) => data.id) };
+    }
+
+    const [donations, total] = await Promise.all([
+      this.aggregate([
+        { $match: query },
+        { $sort: { createdAt: -1 } },
+        { $skip: (Number(payload.page) - 1) * Number(payload.perPage) },
+        { $limit: Number(payload.perPage) },
+        {
+          $group: {
+            _id: '$user',
+            totalDonated: { $sum: '$quantity' },
+            lastDonatedAt: { $first: '$createdAt' },
+          },
+        },
+      ]),
+      this.aggregate([
+        { $match: query },
+        { $group: { _id: '$user' } },
+        { $count: 'total' },
+      ]),
+    ]);
+    await this.userService.populate(donations, {
+      path: '_id',
+      select: '-_id -__v -password',
+    });
+    return { donations, total: total[0].total };
   }
 }

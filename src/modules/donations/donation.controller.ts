@@ -30,4 +30,12 @@ export class DonationsController {
   async create(@Body() body: CreateDonationDto, @Req() req: IRequest) {
     return this.donationsService.createDonation(body, req.hospital!);
   }
+
+  @Get('users')
+  async userDonationsSummary(
+    @Query() query: FindDonationsDto,
+    @Req() req: IRequest,
+  ) {
+    return this.donationsService.aggregateDonations(query, req.hospital);
+  }
 }

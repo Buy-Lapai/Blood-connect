@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, PopulateOptions } from 'mongoose';
 import { User, UserCreate, UserDocument } from './user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FindUsersDto } from './dto/find-user.dto';
@@ -46,6 +46,10 @@ export class UsersService {
 
   async findOne(query: FilterQuery<User>): Promise<User | undefined> {
     return this.userModel.findOne(query);
+  }
+
+  async populate(data: any[], option: PopulateOptions) {
+    return this.userModel.populate(data, option);
   }
 
   async generateUserID() {
