@@ -4,7 +4,7 @@ import { BloodBanksService } from './blood-banks.service';
 import { HospitalGuard } from 'src/guards/hospital.guard';
 import { IRequest } from 'src/interfaces/express';
 
-@ApiTags('BloodBanks')
+@ApiTags('Blood Banks')
 @ApiBearerAuth()
 @Controller('bloodbanks')
 export class BloodBanksController {

@@ -10,7 +10,9 @@ import {
 import { VisitsService } from './visits.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateVisitDto } from './dto/create-visit.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Visits')
 @Controller('visits')
 export class VisitsController {
   constructor(private visitsService: VisitsService) {}
