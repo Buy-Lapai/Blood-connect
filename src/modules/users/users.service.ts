@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
-import { User, UserDocument } from './user.schema';
+import { User, UserCreate, UserDocument } from './user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FindUsersDto } from './dto/find-user.dto';
 
@@ -9,7 +9,7 @@ import { FindUsersDto } from './dto/find-user.dto';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: UserCreate): Promise<User> {
     return this.userModel.create(createUserDto);
   }
 
@@ -48,6 +48,11 @@ export class UsersService {
     return this.userModel.findOne(query);
   }
 
+  async generateUserID() {
+    const usersCount = await this.count({});
+    return `BC${usersCount < 10 ? `00${usersCount + 1}` : usersCount < 100 ? `0${usersCount + 1}` : `${usersCount + 1}`}`;
+  }
+
   async createUser(payload: CreateUserDto): Promise<User | undefined> {
     const [emailExist, ninExist, phoneNumberExist] = await Promise.all([
       payload.email
@@ -74,9 +79,11 @@ export class UsersService {
       throw new BadRequestException(
         'A donor with this NIN already exist on our platform',
       );
+    const bcID = await this.generateUserID();
     return this.create({
       ...payload,
       gender: payload.gender.toLocaleLowerCase(),
+      bcID,
     });
   }
 

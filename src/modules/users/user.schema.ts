@@ -36,13 +36,53 @@ export class User extends Document {
   nin: string;
 
   @Prop()
-  id: string;
+  bcID: string;
 
   @Prop({ enum: ['male', 'female'] })
   gender: string;
 
   @Prop()
-  totalQuantityDonated: number;
+  dob: string;
+
+  @Prop()
+  address: string;
+
+  @Prop()
+  phoneNumber: string;
+}
+
+export class UserCreate {
+  @Prop()
+  firstName: string;
+
+  @Prop()
+  middleName?: string;
+
+  @Prop()
+  lastName: string;
+
+  @Prop()
+  email: string;
+
+  @Prop()
+  password?: string;
+
+  @Prop({
+    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+  })
+  bloodGroup: string;
+
+  @Prop()
+  nin: string;
+
+  @Prop()
+  bcID: string;
+
+  @Prop({ enum: ['male', 'female'] })
+  gender: string;
+
+  @Prop()
+  dob: string;
 
   @Prop()
   address: string;
