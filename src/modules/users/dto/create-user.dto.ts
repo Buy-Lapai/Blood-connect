@@ -41,7 +41,7 @@ export class CreateUserDto {
   @IsString({ message: 'Blood group is invalid' })
   @IsValidBloodType()
   @ApiProperty()
-  bloodGroup: string;
+  bloodGroup: 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-';
 
   @IsNotEmpty({ message: 'NIN is required' })
   @IsNumberString({}, { message: 'NIN is invalid' })

@@ -30,7 +30,7 @@ export class User extends Document {
   @Prop({
     enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
   })
-  bloodGroup: string;
+  bloodGroup: 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-';
 
   @Prop()
   nin: string;
@@ -70,7 +70,7 @@ export class UserCreate {
   @Prop({
     enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
   })
-  bloodGroup: string;
+  bloodGroup: 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-';
 
   @Prop()
   nin: string;

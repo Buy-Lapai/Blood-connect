@@ -7,6 +7,11 @@ import { JwtService } from './services/jwt.service';
 import { JwtMiddleware } from './middlewares/jwt.middleware';
 import { HospitalsService } from './modules/hospitals/hospitals.service';
 import { UsersService } from './modules/users/users.service';
+import { BloodBanksService } from './modules/blood-banks/blood-banks.service';
+import {
+  BloodBank,
+  BloodBankSchema,
+} from './modules/blood-banks/blood-banks.schema';
 
 @Global()
 @Module({
@@ -15,10 +20,23 @@ import { UsersService } from './modules/users/users.service';
       { name: User.name, schema: UserSchema },
       { name: Hospital.name, schema: HospitalSchema },
       { name: Donation.name, schema: DonationSchema },
+      { name: BloodBank.name, schema: BloodBankSchema },
     ]),
   ],
   controllers: [],
-  providers: [JwtService, JwtMiddleware, HospitalsService, UsersService],
-  exports: [JwtService, JwtMiddleware, UsersService, HospitalsService],
+  providers: [
+    JwtService,
+    JwtMiddleware,
+    HospitalsService,
+    UsersService,
+    BloodBanksService,
+  ],
+  exports: [
+    JwtService,
+    JwtMiddleware,
+    UsersService,
+    HospitalsService,
+    BloodBanksService,
+  ],
 })
 export class GlobalModule {}

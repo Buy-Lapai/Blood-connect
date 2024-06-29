@@ -12,12 +12,14 @@ import { UsersService } from '../users/users.service';
 import { Hospital } from '../hospitals/hospitals.schema';
 import { CreateDonationDto } from './dto/create-donation.dto';
 import { FindDonationsDto } from './dto/find-donation.dto';
+import { BloodBanksService } from '../blood-banks/blood-banks.service';
 
 @Injectable()
 export class DonationsService {
   constructor(
     @InjectModel(Donation.name) private donationModel: Model<DonationDocument>,
     private userService: UsersService,
+    private bloodbankService: BloodBanksService,
   ) {}
 
   async find(
@@ -85,6 +87,10 @@ export class DonationsService {
   }
 
   async createDonation(payload: CreateDonationDto, hospital: Hospital) {
+    const donor = await this.userService.findOne({ _id: payload.user });
+    if (!donor)
+      throw new BadRequestException('Donor does not exist on our database');
+
     const storeDonation = await this.create({
       ...payload,
       hospital: hospital.id,
@@ -92,9 +98,22 @@ export class DonationsService {
     if (!storeDonation)
       throw new BadRequestException('Failed to store data. Please try again');
 
-    hospital.totalNumberOfPints += payload.quantity;
-    hospital.numberOfPintsAvailable += payload.quantity;
-    await hospital.save();
+    const bank = await this.bloodbankService.findOne({
+      bloodGroup: donor.bloodGroup,
+      hospital: hospital.id,
+    });
+    if (!bank) {
+      await this.bloodbankService.create({
+        bloodGroup: donor.bloodGroup,
+        totalAvailable: payload.quantity,
+        totalDonated: payload.quantity,
+        hospital: hospital.id
+      });
+    } else {
+      bank.totalAvailable += payload.quantity;
+      bank.totalDonated += payload.quantity;
+      await bank.save()
+    }
 
     return { message: 'Successful' };
   }

@@ -7,8 +7,7 @@ import { VisitsModule } from './modules/visits/visits.module';
 import { HospitalModule } from './modules/hospitals/hospitals.module';
 import { GlobalModule } from './global.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ResponseInterceptor } from './interceptors/response.interceptor';
-import { AllExceptionsFilter } from './filters/exception.filter';
+import { BloodBanksModule } from './modules/blood-banks/blood-banks.module';
 
 @Module({
   imports: [
@@ -29,16 +28,7 @@ import { AllExceptionsFilter } from './filters/exception.filter';
     DonationsModule,
     VisitsModule,
     HospitalModule,
-  ],
-  providers: [
-    // {
-    //   provide: 'APP_FILTER',
-    //   useClass: AllExceptionsFilter,
-    // },
-    // {
-    //   provide: 'APP_INTERCEPTOR',
-    //   useClass: ResponseInterceptor,
-    // },
+    BloodBanksModule
   ],
 })
 export class AppModule {}

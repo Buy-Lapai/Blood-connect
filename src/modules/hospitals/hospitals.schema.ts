@@ -33,12 +33,6 @@ export class Hospital extends Document {
   @Prop()
   address: string;
 
-  @Prop({ default: 0 })
-  totalNumberOfPints: number;
-
-  @Prop({ default: 0 })
-  numberOfPintsAvailable: number;
-
   @Prop()
   accessToken: string;
 }
