@@ -1,7 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema()
+@Schema({
+  timestamps: true,
+  toJSON: {
+    transform(doc, ret) {
+      ret.id = doc._id;
+      delete ret._id;
+      delete ret.__v;
+    },
+  },
+})
 export class Hospital extends Document {
   @Prop({ unique: true })
   name: string;
@@ -29,6 +38,9 @@ export class Hospital extends Document {
 
   @Prop({ default: 0 })
   numberOfPintsAvailable: number;
+
+  @Prop()
+  accessToken: string;
 }
 
 export const HospitalSchema = SchemaFactory.createForClass(Hospital);

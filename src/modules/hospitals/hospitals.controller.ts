@@ -12,11 +12,6 @@ import {
 export class HospitalsController {
   constructor(private readonly hospitaService: HospitalsService) {}
 
-  @Post()
-  async create(@Body() payload: CreateHospitalDto) {
-    return this.hospitaService.register(payload);
-  }
-
   @Get()
   async findAll(@Query() query: FindAllBloodBanksDto) {
     return this.hospitaService.getBloodBanks(query);

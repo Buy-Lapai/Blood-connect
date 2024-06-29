@@ -2,23 +2,31 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-import { DonorsModule } from './modules/donors/donors.module';
+import { DonationsModule } from './modules/donations/donation.module';
 import { VisitsModule } from './modules/visits/visits.module';
-import { JwtModule } from '@nestjs/jwt';
 import { HospitalModule } from './modules/hospitals/hospitals.module';
+import { GlobalModule } from './global.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.DB),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1d' },
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
     }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('DB'),
+      }),
+    }),
+    GlobalModule,
     AuthModule,
     UsersModule,
-    DonorsModule,
+    DonationsModule,
     VisitsModule,
-    HospitalModule
+    HospitalModule,
   ],
 })
 export class AppModule {}

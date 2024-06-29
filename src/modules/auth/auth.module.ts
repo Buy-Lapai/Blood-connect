@@ -13,10 +13,6 @@ import { HospitalModule } from '../hospitals/hospitals.module';
   imports: [
     UsersModule,
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1d' },
-    }),
     ConfigModule.forRoot(),
     HospitalModule
   ],

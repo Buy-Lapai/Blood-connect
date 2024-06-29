@@ -1,19 +1,16 @@
 import {
   Injectable,
-  BadRequestException,
-  ArgumentMetadata,
   UnauthorizedException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
-import { ValidationPipe } from '@nestjs/common';
-import { validate } from 'class-validator';
 import * as bcrypt from 'bcryptjs';
 import { HospitalsService } from '../hospitals/hospitals.service';
+import { JwtService } from 'src/services/jwt.service';
+import { CreateHospitalDto } from '../hospitals/dto/create-hospital.dto';
 
 @Injectable()
 export class AuthService {
@@ -38,30 +35,11 @@ export class AuthService {
         'Incorrect password. Please confirm your password and try again.',
       );
     }
-    const payload = { email: user.email, sub: user._id };
+
     return {
-      accessToken: this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-      }),
-    };
-  }
-
-  async register(createUserDto: CreateUserDto) {
-    const user = await this.usersService.findOneByEmail(createUserDto.email);
-    if (user) {
-      throw new BadRequestException('Email already exists on this platform');
-    }
-
-    const newUser = await this.usersService.create({
-      ...createUserDto,
-      email: createUserDto.email.toLocaleLowerCase(),
-      password: bcrypt.hashSync(createUserDto.password, 12),
-    });
-
-    const payload = { email: newUser.email, sub: newUser._id };
-    return {
-      accessToken: this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('JWT_SECRET'),
+      accessToken: this.jwtService.GenerateAccessToken({
+        id: user.id,
+        type: 'user',
       }),
     };
   }
@@ -86,8 +64,37 @@ export class AuthService {
     }
     const payload = { email: hospital.email, sub: hospital._id };
     return {
-      accessToken: this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('JWT_SECRET'),
+      accessToken: this.jwtService.GenerateAccessToken({
+        id: hospital.id,
+        type: 'hospital',
+      }),
+    };
+  }
+
+  async registerHospital(payload: CreateHospitalDto) {
+    const [nameExists, emailExists] = await Promise.all([
+      this.hospitalService.findOne({
+        name: new RegExp(`^${payload.name}`, 'i'),
+      }),
+      this.hospitalService.findOne({
+        email: payload.email.toLocaleLowerCase(),
+      }),
+    ]);
+    if (nameExists)
+      throw new BadRequestException('An hospital with this name already exist');
+    if (emailExists)
+      throw new BadRequestException(
+        'An hospital with this email already exist',
+      );
+    const hospital = await this.hospitalService.create({
+      ...payload,
+      password: bcrypt.hashSync(payload.password, 12),
+      email: payload.email.toLocaleLowerCase(),
+    });
+    return {
+      accessToken: this.jwtService.GenerateAccessToken({
+        id: hospital.id,
+        type: 'hospital',
       }),
     };
   }

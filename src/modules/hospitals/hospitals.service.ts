@@ -15,7 +15,6 @@ import {
 export class HospitalsService {
   constructor(
     @InjectModel(Hospital.name) private hospitalModel: Model<HospitalDocument>,
-    private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
 
@@ -47,32 +46,6 @@ export class HospitalsService {
 
   async count(query: FilterQuery<HospitalDocument>): Promise<number> {
     return this.hospitalModel.countDocuments(query);
-  }
-
-  async register(payload: CreateHospitalDto) {
-    const [nameExists, emailExists] = await Promise.all([
-      this.findOne({ name: new RegExp(`^${payload.name}`, 'i') }),
-      this.findOne({ email: payload.email.toLocaleLowerCase() }),
-    ]);
-    if (nameExists)
-      throw new BadRequestException('An hospital with this name already exist');
-    if (emailExists)
-      throw new BadRequestException(
-        'An hospital with this email already exist',
-      );
-    const hospital = await this.create({
-      ...payload,
-      password: bcrypt.hashSync(payload.password, 12),
-      email: payload.email.toLocaleLowerCase(),
-    });
-    return {
-      accessToken: this.jwtService.sign(
-        { email: hospital.email, sub: hospital._id },
-        {
-          secret: this.configService.get<string>('JWT_SECRET'),
-        },
-      ),
-    };
   }
 
   async getBloodBanksNearMe(request: FindAllBloodBanksNearMeDto) {
