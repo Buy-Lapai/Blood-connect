@@ -8,7 +8,8 @@ import {
   MinLength,
 } from 'class-validator';
 import { IsVeryStrongPassword } from '../../auth/password-validator.decorator';
-import { IsValidBloodType } from '../../auth/bloodtype-validator.decorator';
+import { IsValidBloodType } from '../../auth/decorators/bloodtype-validator.decorator';
+import { IsValidGender } from 'src/modules/auth/decorators/gender.decorator';
 
 export class CreateUserDto {
   @IsNotEmpty({ message: 'First name is required' })
@@ -16,6 +17,7 @@ export class CreateUserDto {
   @ApiProperty()
   firstName: string;
 
+  @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
   middleName: string;
@@ -25,6 +27,7 @@ export class CreateUserDto {
   @ApiProperty()
   lastName: string;
 
+  @IsOptional()
   @IsEmail({}, { message: 'Email must be a valid email' })
   @ApiProperty({ required: false })
   email: string;
@@ -40,12 +43,13 @@ export class CreateUserDto {
   bloodGroup: string;
 
   @IsNotEmpty({ message: 'NIN is required' })
-  @IsString({ message: 'NIN is invalid' })
+  @IsNumberString({}, { message: 'NIN is invalid' })
   @ApiProperty()
   nin: string;
 
   @IsNotEmpty({ message: 'Gender is required' })
   @IsString({ message: 'Gender is invalid' })
+  @IsValidGender()
   @ApiProperty()
   gender: string;
 

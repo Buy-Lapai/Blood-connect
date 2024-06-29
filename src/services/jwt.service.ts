@@ -9,7 +9,7 @@ export class JwtService {
   GenerateAccessToken(payload: { id: string; type: 'hospital' | 'user' }) {
     return sign(
       payload,
-      this.configService.get<string>('JWT_SECRET_KEY') as string,
+      this.configService.get<string>('JWT_SECRET') as string,
       {
         expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
       },
@@ -20,13 +20,14 @@ export class JwtService {
     try {
       const decoded = verify(
         token,
-        this.configService.get<string>('JWT_SECRET_KEY') as string,
+        this.configService.get<string>('JWT_SECRET') as string,
       ) as {
         id: string;
         type: 'hospital' | 'user';
       } | null;
       return decoded;
     } catch (error) {
+      console.log(error)
       return null;
     }
   }

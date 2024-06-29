@@ -19,6 +19,6 @@ import { UsersService } from './modules/users/users.service';
   ],
   controllers: [],
   providers: [JwtService, JwtMiddleware, HospitalsService, UsersService],
-  exports: [JwtService, JwtMiddleware, UsersService],
+  exports: [JwtService, JwtMiddleware, UsersService, HospitalsService],
 })
 export class GlobalModule {}

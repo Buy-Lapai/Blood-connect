@@ -25,7 +25,7 @@ async function bootstrap() {
     .addTag('Auth')
     .addTag('Users')
     .addTag('Blood Banks')
-    .addTag('Donors')
+    .addTag('Donations')
     .addTag('Visits')
     .build();
   const document = SwaggerModule.createDocument(app, config);

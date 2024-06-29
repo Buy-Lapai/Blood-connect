@@ -62,12 +62,14 @@ export class AuthService {
         'Incorrect password. Please confirm your password and try again.',
       );
     }
-    const payload = { email: hospital.email, sub: hospital._id };
+    const accessToken = this.jwtService.GenerateAccessToken({
+      id: hospital.id,
+      type: 'hospital',
+    });
+    hospital.accessToken = accessToken;
+    await hospital.save();
     return {
-      accessToken: this.jwtService.GenerateAccessToken({
-        id: hospital.id,
-        type: 'hospital',
-      }),
+      accessToken,
     };
   }
 

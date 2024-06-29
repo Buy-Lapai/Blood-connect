@@ -26,7 +26,6 @@ export class ResponseInterceptor implements NestInterceptor {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
-
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
@@ -88,5 +87,6 @@ export class ResponseInterceptor implements NestInterceptor {
         (request.socket.remoteAddress as string)
       } | success | ${response.getHeaders()['x-response-time']?.toString()}`,
     );
+    return;
   }
 }

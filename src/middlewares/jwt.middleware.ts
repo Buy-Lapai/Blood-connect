@@ -37,15 +37,7 @@ export class JwtMiddleware implements NestMiddleware {
     let decoded: {
       id: string;
       type: 'hospital' | 'user';
-    } | null = null;
-    try {
-      decoded = this.jwtService.verifyAccessToken(token);
-    } catch (err) {
-      throw new HttpException(
-        { message: 'Invalid token!' },
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
+    } | null = this.jwtService.verifyAccessToken(token);
 
     if (!decoded) {
       throw new HttpException(

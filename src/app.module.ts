@@ -7,6 +7,8 @@ import { VisitsModule } from './modules/visits/visits.module';
 import { HospitalModule } from './modules/hospitals/hospitals.module';
 import { GlobalModule } from './global.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { AllExceptionsFilter } from './filters/exception.filter';
 
 @Module({
   imports: [
@@ -27,6 +29,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     DonationsModule,
     VisitsModule,
     HospitalModule,
+  ],
+  providers: [
+    // {
+    //   provide: 'APP_FILTER',
+    //   useClass: AllExceptionsFilter,
+    // },
+    // {
+    //   provide: 'APP_INTERCEPTOR',
+    //   useClass: ResponseInterceptor,
+    // },
   ],
 })
 export class AppModule {}

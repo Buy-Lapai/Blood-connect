@@ -38,7 +38,7 @@ export class User extends Document {
   @Prop()
   id: string;
 
-  @Prop({ enum: ['Male', 'Female'] })
+  @Prop({ enum: ['male', 'female'] })
   gender: string;
 
   @Prop()
