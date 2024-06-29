@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FindUsersDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -26,7 +27,21 @@ export class UsersService {
     limit?: number,
     select?: string,
   ): Promise<User[]> {
-    return this.userModel.find(query).skip(skip).limit(limit).select(select);
+    return this.userModel
+      .find(query)
+      .skip(skip)
+      .limit(limit)
+      .select(select)
+      .sort({ firstName: 'asc', lastName: 'asc' });
+  }
+
+  async count(
+    query: FilterQuery<User>,
+    skip?: number,
+    limit?: number,
+    select?: string,
+  ) {
+    return this.userModel.countDocuments(query);
   }
 
   async findOne(query: FilterQuery<User>): Promise<User | undefined> {
@@ -63,5 +78,29 @@ export class UsersService {
       ...payload,
       gender: payload.gender.toLocaleLowerCase(),
     });
+  }
+
+  async findMany(payload: FindUsersDto) {
+    const query: FilterQuery<User> = {};
+    if (payload.search)
+      query.$or = [
+        { firstName: new RegExp(`^${payload.search}`, 'i') },
+        { lastName: new RegExp(`^${payload.search}`, 'i') },
+        { email: new RegExp(`^${payload.search}`, 'i') },
+        { phoneNumber: new RegExp(`^${payload.search}`, 'i') },
+        { nin: new RegExp(`^${payload.search}`, 'i') },
+        { address: new RegExp(`^${payload.search}`, 'i') },
+        { gender: new RegExp(`^${payload.search}`, 'i') },
+      ];
+    const [users, total] = await Promise.all([
+      this.find(
+        query,
+        (Number(payload.page) - 1) * Number(payload.perPage),
+        Number(payload.perPage),
+        '-__v -_id',
+      ),
+      this.count(query),
+    ]);
+    return { users, total };
   }
 }
