@@ -8,8 +8,8 @@ import {
   MinLength,
 } from 'class-validator';
 import { IsVeryStrongPassword } from '../../auth/password-validator.decorator';
-import { IsValidBloodType } from '../../auth/decorators/bloodtype-validator.decorator';
-import { IsValidGender } from 'src/modules/auth/decorators/gender.decorator';
+import { IsValidBloodType } from '../../../validators/bloodtype.validator';
+import { IsValidGender } from 'src/validators/gender.validator';
 
 export class CreateUserDto {
   @IsNotEmpty({ message: 'First name is required' })

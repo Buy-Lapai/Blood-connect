@@ -28,9 +28,6 @@ export class DonationsController {
   @UseGuards(HospitalGuard)
   @Post()
   async create(@Body() body: CreateDonationDto, @Req() req: IRequest) {
-    return this.donationsService.createDonation({
-      ...body,
-      hospital: req.hospital!.id,
-    });
+    return this.donationsService.createDonation(body, req.hospital!);
   }
 }

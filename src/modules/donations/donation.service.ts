@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   FilterQuery,
@@ -86,7 +86,18 @@ export class DonationsService {
     // ]);
   }
 
-  async createDonation(payload: Donation): Promise<Donation> {
-    return this.create(payload);
+  async createDonation(payload: CreateDonationDto, hospital: Hospital) {
+    const storeDonation = await this.create({
+      ...payload,
+      hospital: hospital.id,
+    });
+    if (!storeDonation)
+      throw new BadRequestException('Failed to store data. Please try again');
+
+    hospital.totalNumberOfPints += payload.quantity;
+    hospital.numberOfPintsAvailable += payload.quantity;
+    await hospital.save();
+
+    return { message: 'Successful' };
   }
 }
