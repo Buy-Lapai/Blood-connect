@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { IsValidBloodType } from 'src/validators/bloodtype.validator';
 
 export class FindAllBloodBanksDto {
   @IsNotEmpty({ message: 'Page is required' })
@@ -28,15 +35,21 @@ export class FindAllBloodBanksNearMeDto {
   @ApiProperty()
   perPage: number;
 
-  @IsNotEmpty({ message: 'State is required' })
-  @IsString({ message: 'State is required' })
+  @IsNotEmpty({ message: 'Longitude is required' })
+  @IsString({ message: 'Longitude is required' })
   @ApiProperty()
-  state: string;
+  longitude: string;
 
-  @IsNotEmpty({ message: 'LGA is required' })
-  @IsString({ message: 'LGA is required' })
+  @IsNotEmpty({ message: 'Latitude is required' })
+  @IsString({ message: 'Latitude is required' })
   @ApiProperty()
-  lga: string;
+  latitude: string;
+
+  @IsNotEmpty({ message: 'Blood group is required' })
+  @IsString({ message: 'Blood group is invalid' })
+  @IsValidBloodType()
+  @ApiProperty()
+  bloodGroup: 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-';
 
   @IsOptional()
   @ApiProperty({ required: false })

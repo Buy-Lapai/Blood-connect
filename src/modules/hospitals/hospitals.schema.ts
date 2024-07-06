@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 
 @Schema({
   timestamps: true,
@@ -35,8 +35,19 @@ export class Hospital extends Document {
 
   @Prop()
   accessToken: string;
+
+  @Prop()
+  long: string;
+
+  @Prop()
+  lat: string;
+
+  @Prop({ type: SchemaTypes.Mixed })
+  location: { type: 'Point'; coordinates: [number, number] };
 }
 
 export const HospitalSchema = SchemaFactory.createForClass(Hospital);
+
+HospitalSchema.index({ location: '2dsphere' });
 
 export type HospitalDocument = Hospital & Document;

@@ -92,6 +92,10 @@ export class AuthService {
       ...payload,
       password: bcrypt.hashSync(payload.password, 12),
       email: payload.email.toLocaleLowerCase(),
+      location: {
+        type: 'Point',
+        coordinates: [Number(payload.long), Number(payload.lat)],
+      },
     });
     return {
       accessToken: this.jwtService.GenerateAccessToken({

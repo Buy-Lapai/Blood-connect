@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
+  IsNumberString,
   IsString,
   MinLength,
 } from 'class-validator';
@@ -40,8 +41,18 @@ export class CreateHospitalDto {
   @ApiProperty()
   street: string;
 
-  @IsNotEmpty({ message: 'Address is required' })
-  @IsString({ message: 'Street is required' })
+  @IsNotEmpty({ message: 'House number is required' })
+  @IsString({ message: 'House number is required' })
   @ApiProperty()
   houseNumber: string;
+
+  @IsNotEmpty({ message: 'Longitude is required' })
+  @IsNumberString({}, { message: 'Longitude is required' })
+  @ApiProperty()
+  long: string;
+
+  @IsNotEmpty({ message: 'Latitude is required' })
+  @IsNumberString({}, { message: 'Latitude is required' })
+  @ApiProperty()
+  lat: string;
 }

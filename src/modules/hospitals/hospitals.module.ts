@@ -22,6 +22,6 @@ import { GlobalModule } from 'src/global.module';
 })
 export class HospitalModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes('hospitals');
+    consumer.apply().forRoutes('hospitals');
   }
 }

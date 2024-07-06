@@ -10,15 +10,21 @@ import {
   FindAllBloodBanksDto,
   FindAllBloodBanksNearMeDto,
 } from './dto/find-hospitals.dto';
+import {
+  BloodBank,
+  BloodBankDocument,
+} from '../blood-banks/blood-banks.schema';
+import { BloodBanksService } from '../blood-banks/blood-banks.service';
 
 @Injectable()
 export class HospitalsService {
   constructor(
     @InjectModel(Hospital.name) private hospitalModel: Model<HospitalDocument>,
+    private readonly bloodBankService: BloodBanksService,
     private configService: ConfigService,
   ) {}
 
-  async create(payload: CreateHospitalDto): Promise<Hospital> {
+  async create(payload: Partial<HospitalDocument>): Promise<Hospital> {
     return this.hospitalModel.create(payload);
   }
 
@@ -49,25 +55,54 @@ export class HospitalsService {
   }
 
   async getBloodBanksNearMe(request: FindAllBloodBanksNearMeDto) {
-    const query: FilterQuery<HospitalDocument> = {
-      state: new RegExp(request.state, 'i'),
-      lga: new RegExp(request.lga, 'i'),
-    };
+    const bloodBanks = await this.bloodBankService.find({
+      bloodGroup: request.bloodGroup,
+      totalAvailable: { $gt: 0 },
+    });
+    const query: FilterQuery<HospitalDocument> = {_id: {$in: bloodBanks.map(data => data.hospital)}};
     if (request.search)
       query.$or = [
         { address: new RegExp(`^${request.search}`, 'i') },
         { name: new RegExp(`^${request.search}`, 'i') },
       ];
     const [hospitals, total] = await Promise.all([
-      this.findMany(
-        query,
-        (Number(request.page) - 1) * Number(request.perPage),
-        Number(request.perPage),
-        { name: 'asc' },
-      ),
-      this.count(query),
+      this.hospitalModel.aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: 'Point',
+              coordinates: [
+                Number(request.longitude),
+                Number(request.latitude),
+              ],
+            },
+            distanceField: 'dist.calculated',
+            maxDistance: 10,
+            query,
+          },
+        },
+        { $skip: (Number(request.page) - 1) * Number(request.perPage) },
+        { $limit: Number(request.perPage) },
+      ]),
+      this.hospitalModel.aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: 'Point',
+              coordinates: [
+                Number(request.longitude),
+                Number(request.latitude),
+              ],
+            },
+            distanceField: 'dist.calculated',
+            maxDistance: 10,
+            query,
+          },
+        },
+        { $count: 'total' },
+      ]),
     ]);
-    return { hospitals, total };
+    return { hospitals, total: total[0]?.total || 0 };
   }
 
   async getBloodBanks(request: FindAllBloodBanksDto) {
