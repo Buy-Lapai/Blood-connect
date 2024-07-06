@@ -7,6 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { IsValidBloodType } from 'src/validators/bloodtype.validator';
+import { IsValidObjectId } from 'src/validators/objectid.validator';
 
 export class FindAllBloodBanksDto {
   @IsNotEmpty({ message: 'Page is required' })
@@ -54,4 +55,11 @@ export class FindAllBloodBanksNearMeDto {
   @IsOptional()
   @ApiProperty({ required: false })
   search: string;
+}
+
+export class FindHospitalDto {
+  @IsNotEmpty({ message: 'ID is required' })
+  @IsValidObjectId()
+  @ApiProperty()
+  id: string;
 }

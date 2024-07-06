@@ -30,8 +30,9 @@ export class HospitalsService {
 
   async findOne(
     query: FilterQuery<HospitalDocument>,
+    select?: string,
   ): Promise<Hospital | null> {
-    return this.hospitalModel.findOne(query);
+    return this.hospitalModel.findOne(query).select(select);
   }
 
   async findMany(
@@ -59,7 +60,9 @@ export class HospitalsService {
       bloodGroup: request.bloodGroup,
       totalAvailable: { $gt: 0 },
     });
-    const query: FilterQuery<HospitalDocument> = {_id: {$in: bloodBanks.map(data => data.hospital)}};
+    const query: FilterQuery<HospitalDocument> = {
+      _id: { $in: bloodBanks.map((data) => data.hospital) },
+    };
     if (request.search)
       query.$or = [
         { address: new RegExp(`^${request.search}`, 'i') },
@@ -77,10 +80,11 @@ export class HospitalsService {
               ],
             },
             distanceField: 'dist.calculated',
-            maxDistance: 10,
+            // maxDistance: 10,
             query,
           },
         },
+        { $sort: { distanceField: 1 } },
         { $skip: (Number(request.page) - 1) * Number(request.perPage) },
         { $limit: Number(request.perPage) },
       ]),
@@ -95,7 +99,7 @@ export class HospitalsService {
               ],
             },
             distanceField: 'dist.calculated',
-            maxDistance: 10,
+            // maxDistance: 10,
             query,
           },
         },
@@ -123,5 +127,10 @@ export class HospitalsService {
       this.count(query),
     ]);
     return { hospitals, total };
+  }
+
+  async getHospital(id: string) {
+    const hospital = await this.findOne({ _id: id }, '-__v -password -accessToken');
+    return { hospital };
   }
 }
