@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Donation, DonationSchema } from './donation.schema';
 import { DonationsService } from './donation.service';
@@ -13,13 +13,16 @@ import { GlobalModule } from 'src/global.module';
       { name: Donation.name, schema: DonationSchema },
     ]),
     UsersModule,
-    GlobalModule
+    GlobalModule,
   ],
   providers: [DonationsService],
   controllers: [DonationsController],
 })
 export class DonationsModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes('donations');
+    consumer
+      .apply(JwtMiddleware)
+      .exclude({ path: 'donations/top-donors', method: RequestMethod.GET })
+      .forRoutes('donations');
   }
 }

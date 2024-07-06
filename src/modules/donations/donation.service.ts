@@ -11,7 +11,7 @@ import { Donation, DonationDocument } from './donation.schema';
 import { UsersService } from '../users/users.service';
 import { Hospital } from '../hospitals/hospitals.schema';
 import { CreateDonationDto } from './dto/create-donation.dto';
-import { FindDonationsDto } from './dto/find-donation.dto';
+import { FindDonationsDto, FindTopDonorsDto } from './dto/find-donation.dto';
 import { BloodBanksService } from '../blood-banks/blood-banks.service';
 
 @Injectable()
@@ -107,12 +107,12 @@ export class DonationsService {
         bloodGroup: donor.bloodGroup,
         totalAvailable: payload.quantity,
         totalDonated: payload.quantity,
-        hospital: hospital.id
+        hospital: hospital.id,
       });
     } else {
       bank.totalAvailable += payload.quantity;
       bank.totalDonated += payload.quantity;
-      await bank.save()
+      await bank.save();
     }
 
     return { message: 'Successful' };
@@ -161,5 +161,47 @@ export class DonationsService {
       select: '-_id -__v -password',
     });
     return { donations, total: total[0].total };
+  }
+
+  async topDonors(payload: FindTopDonorsDto) {
+    const query: FilterQuery<Donation> = {};
+    if (payload.search) {
+      const users = await this.userService.find(
+        {
+          $or: [
+            { firstName: new RegExp(`^${payload.search}`, 'i') },
+            { lastName: new RegExp(`^${payload.search}`, 'i') },
+          ],
+          bloodGroup: payload.bloodGroup,
+        },
+        0,
+        50,
+        'id',
+      );
+      query.user = { $in: users.map((data) => data.id) };
+    } else {
+      const users = await this.userService.find({
+        bloodGroup: payload.bloodGroup,
+      });
+      query.user = { $in: users.map((data) => data.id) };
+    }
+
+    const [donations] = await Promise.all([
+      this.aggregate([
+        { $match: query },
+        {
+          $group: {
+            _id: '$user',
+            totalDonated: { $sum: '$quantity' },
+          },
+        },
+        { $sort: { totalDonated: -1 } },
+      ]),
+    ]);
+    await this.userService.populate(donations, {
+      path: '_id',
+      select: '-_id -__v -password',
+    });
+    return { donations };
   }
 }
