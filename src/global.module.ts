@@ -12,6 +12,8 @@ import {
   BloodBank,
   BloodBankSchema,
 } from './modules/blood-banks/blood-banks.schema';
+import { Appointment, AppointmentSchema } from './modules/appointments/appointment.schema';
+import { AppointmentsService } from './modules/appointments/appointment.service';
 
 @Global()
 @Module({
@@ -21,6 +23,7 @@ import {
       { name: Hospital.name, schema: HospitalSchema },
       { name: Donation.name, schema: DonationSchema },
       { name: BloodBank.name, schema: BloodBankSchema },
+      { name: Appointment.name, schema: AppointmentSchema },
     ]),
   ],
   controllers: [],
@@ -30,6 +33,7 @@ import {
     HospitalsService,
     UsersService,
     BloodBanksService,
+    AppointmentsService
   ],
   exports: [
     JwtService,
@@ -37,6 +41,7 @@ import {
     UsersService,
     HospitalsService,
     BloodBanksService,
+    AppointmentsService
   ],
 })
 export class GlobalModule {}

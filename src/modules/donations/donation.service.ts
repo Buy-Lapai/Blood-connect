@@ -13,6 +13,7 @@ import { Hospital } from '../hospitals/hospitals.schema';
 import { CreateDonationDto } from './dto/create-donation.dto';
 import { FindDonationsDto, FindTopDonorsDto } from './dto/find-donation.dto';
 import { BloodBanksService } from '../blood-banks/blood-banks.service';
+import { AppointmentsService } from '../appointments/appointment.service';
 
 @Injectable()
 export class DonationsService {
@@ -20,6 +21,7 @@ export class DonationsService {
     @InjectModel(Donation.name) private donationModel: Model<DonationDocument>,
     private userService: UsersService,
     private bloodbankService: BloodBanksService,
+    private appointmentService: AppointmentsService,
   ) {}
 
   async find(
@@ -114,6 +116,12 @@ export class DonationsService {
       bank.totalDonated += payload.quantity;
       await bank.save();
     }
+
+    if (payload.appointment)
+      await this.appointmentService.update(
+        { status: 'Donated' },
+        { _id: payload.appointment },
+      );
 
     return { message: 'Successful' };
   }

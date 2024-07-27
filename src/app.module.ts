@@ -8,6 +8,7 @@ import { HospitalModule } from './modules/hospitals/hospitals.module';
 import { GlobalModule } from './global.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BloodBanksModule } from './modules/blood-banks/blood-banks.module';
+import { AppointmentsModule } from './modules/appointments/appointment.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { BloodBanksModule } from './modules/blood-banks/blood-banks.module';
     DonationsModule,
     VisitsModule,
     HospitalModule,
-    BloodBanksModule
+    BloodBanksModule,
+    AppointmentsModule,
   ],
 })
 export class AppModule {}

@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Donation, DonationSchema } from './donation.schema';
 import { DonationsService } from './donation.service';
 import { DonationsController } from './donation.controller';
-import { UsersModule } from '../users/users.module';
 import { JwtMiddleware } from 'src/middlewares/jwt.middleware';
 import { GlobalModule } from 'src/global.module';
 
@@ -12,7 +11,6 @@ import { GlobalModule } from 'src/global.module';
     MongooseModule.forFeature([
       { name: Donation.name, schema: DonationSchema },
     ]),
-    UsersModule,
     GlobalModule,
   ],
   providers: [DonationsService],
